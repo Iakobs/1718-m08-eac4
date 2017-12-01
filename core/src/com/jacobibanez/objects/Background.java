@@ -1,0 +1,22 @@
+package com.jacobibanez.objects;
+
+import com.badlogic.gdx.graphics.g2d.Batch;
+import com.jacobibanez.helpers.AssetManager;
+
+/**
+ * @author <a href="mailto:jacobibanez@jacobibanez.com">Jacob Ibáñez Sánchez</a>.
+ */
+public class Background extends Scrollable {
+
+    public Background(float x, float y, float width, float height, float velocity) {
+        super(x, y, width, height, velocity);
+    }
+
+    @Override
+    public void draw(Batch batch, float parentAlpha) {
+        super.draw(batch, parentAlpha);
+        batch.disableBlending();
+        batch.draw(AssetManager.background, position.x, position.y, width, height);
+        batch.enableBlending();
+    }
+}
