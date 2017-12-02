@@ -2,7 +2,7 @@ package com.jacobibanez;
 
 import com.badlogic.gdx.Game;
 import com.jacobibanez.helpers.AssetManager;
-import com.jacobibanez.screens.GameScreen;
+import com.jacobibanez.screens.SplashScreen;
 
 /**
  * Entry point of the application.
@@ -14,7 +14,7 @@ public class SpaceRace extends Game {
     @Override
     public void create() {
         AssetManager.load();
-        setScreen(new GameScreen());
+        setScreen(new SplashScreen(this));
     }
 
     @Override

@@ -116,4 +116,11 @@ public class Spacecraft extends Actor {
         }
         return null;
     }
+
+    public void reset() {
+        position.x = Settings.SPACECRAFT_START_X;
+        position.y = Settings.SPACECRAFT_START_Y;
+        direction = SPACECRAFT_STRAIGHT;
+        collisionRectangle = new Rectangle();
+    }
 }

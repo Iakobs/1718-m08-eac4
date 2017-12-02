@@ -3,12 +3,11 @@ package com.jacobibanez.screens;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.graphics.Color;
-import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.g2d.Batch;
 import com.badlogic.gdx.graphics.g2d.GlyphLayout;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.scenes.scene2d.Stage;
-import com.badlogic.gdx.utils.viewport.StretchViewport;
+import com.badlogic.gdx.utils.viewport.Viewport;
 import com.jacobibanez.helpers.AssetManager;
 import com.jacobibanez.helpers.InputHandler;
 import com.jacobibanez.objects.Asteroid;
@@ -27,6 +26,23 @@ public class GameScreen implements Screen {
 
     private static final String SPACECRAFT_NAME = "spacecraft";
 
+    public void reset() {
+        textLayout.setText(AssetManager.font, "Are you\nready?");
+
+        spacecraft.reset();
+        scrollHandler.reset();
+
+        currentState = GameState.READY;
+
+        stage.addActor(spacecraft);
+
+        explosionTime = 0.0f;
+    }
+
+    public enum GameState {
+        READY, RUNNING, GAME_OVER
+    }
+
     private Stage stage;
     private Spacecraft spacecraft;
     private ScrollHandler scrollHandler;
@@ -39,35 +55,32 @@ public class GameScreen implements Screen {
 
     private GlyphLayout textLayout;
 
-    public GameScreen() {
-        shapeRenderer = new ShapeRenderer();
+    private GameState currentState;
 
-        OrthographicCamera camera = new OrthographicCamera(Settings.GAME_WIDTH, Settings.GAME_HEIGHT);
-        camera.setToOrtho(true);
+    public GameScreen(Batch batch, Viewport viewport) {
+        this.shapeRenderer = new ShapeRenderer();
 
-        StretchViewport viewport = new StretchViewport(Settings.GAME_WIDTH, Settings.GAME_HEIGHT, camera);
-        stage = new Stage(viewport);
-        batch = stage.getBatch();
+        this.stage = new Stage(viewport, batch);
+        this.batch = stage.getBatch();
 
-        spacecraft = new Spacecraft(
+        this.spacecraft = new Spacecraft(
                 Settings.SPACECRAFT_START_X,
                 Settings.SPACECRAFT_START_Y,
                 Settings.SPACECRAFT_WIDTH,
                 Settings.SPACECRAFT_HEIGHT
         );
-        scrollHandler = new ScrollHandler();
+        this.scrollHandler = new ScrollHandler();
 
-        stage.addActor(scrollHandler);
-        stage.addActor(spacecraft);
+        this.stage.addActor(scrollHandler);
+        this.stage.addActor(spacecraft);
 
-        spacecraft.setName(SPACECRAFT_NAME);
+        this.spacecraft.setName(SPACECRAFT_NAME);
 
-        AssetManager.bgMusic.play();
+//        AssetManager.bgMusic.play();
 
         Gdx.input.setInputProcessor(new InputHandler(this));
 
-        textLayout = new GlyphLayout();
-        textLayout.setText(AssetManager.font, "GameOver");
+        this.currentState = GameState.READY;
     }
 
     public Stage getStage() {
@@ -82,6 +95,14 @@ public class GameScreen implements Screen {
         return scrollHandler;
     }
 
+    public GameState getCurrentState() {
+        return currentState;
+    }
+
+    public void setCurrentState(GameState currentState) {
+        this.currentState = currentState;
+    }
+
     @Override
     public void show() {
 
@@ -89,42 +110,68 @@ public class GameScreen implements Screen {
 
     @Override
     public void render(float delta) {
-        stage.act(delta);
         stage.draw();
 
-        if (!gameOver) {
-            if (scrollHandler.collides(spacecraft)) {
-                AssetManager.explosionSound.play();
-                stage.getRoot().findActor(SPACECRAFT_NAME).remove();
-                gameOver = true;
-            }
-        } else {
-            batch.begin();
-            batch.draw(AssetManager.explosionAnimation.getKeyFrame(
-                    explosionTime, false),
-                    (spacecraft.getX() + spacecraft.getWidth() / 2) - 32,
-                    spacecraft.getY() + spacecraft.getHeight() / 2 - 32,
-                    64,
-                    64
-            );
-
-            AssetManager.font.draw(
-                    batch,
-                    textLayout,
-                    Settings.GAME_WIDTH / 2 - textLayout.width / 2,
-                    Settings.GAME_HEIGHT / 2 - textLayout.height / 2
-            );
-
-            batch.end();
-
-            explosionTime += delta;
-        }
-
-        if (scrollHandler.collides(spacecraft)) {
-            Gdx.app.log("App", "Explosion");
+        switch (currentState) {
+            case READY:
+                updateReady();
+                break;
+            case RUNNING:
+                updateRunning(delta);
+                break;
+            case GAME_OVER:
+                updateGameOver(delta);
+                break;
         }
 
 //        drawElements();
+    }
+
+    private void updateReady() {
+        textLayout = new GlyphLayout();
+        textLayout.setText(AssetManager.font, "Are you\nready?");
+
+        batch.begin();
+        AssetManager.font.draw(
+                batch,
+                textLayout,
+                (Settings.GAME_WIDTH / 2) - textLayout.width / 2,
+                (Settings.GAME_HEIGHT / 2) - textLayout.height / 2
+        );
+        batch.end();
+    }
+
+    private void updateRunning(float delta) {
+        stage.act(delta);
+
+        if (scrollHandler.collides(spacecraft)) {
+            AssetManager.explosionSound.play();
+            stage.getRoot().findActor(SPACECRAFT_NAME).remove();
+            textLayout.setText(AssetManager.font, "Game Over :'(");
+            currentState = GameState.GAME_OVER;
+        }
+    }
+
+    private void updateGameOver(float delta) {
+        stage.act(delta);
+
+        batch.begin();
+        AssetManager.font.draw(
+                batch,
+                textLayout,
+                (Settings.GAME_WIDTH / 2) - textLayout.width / 2,
+                (Settings.GAME_HEIGHT / 2) - textLayout.height / 2
+        );
+        batch.draw(AssetManager.explosionAnimation.getKeyFrame(
+                explosionTime, false),
+                (spacecraft.getX() + spacecraft.getWidth() / 2) - 32,
+                spacecraft.getY() + spacecraft.getHeight() / 2 - 32,
+                64,
+                64
+        );
+        batch.end();
+
+        explosionTime += delta;
     }
 
     @Override
@@ -153,8 +200,6 @@ public class GameScreen implements Screen {
     }
 
     private void drawElements() {
-//        Gdx.gl20.glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
-//        Gdx.gl20.glClear(GL20.GL_COLOR_BUFFER_BIT);
 
         shapeRenderer.setProjectionMatrix(batch.getProjectionMatrix());
 

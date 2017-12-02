@@ -95,4 +95,11 @@ public class ScrollHandler extends Group {
         }
         return false;
     }
+
+    public void reset() {
+        asteroids.get(0).reset(Settings.GAME_WIDTH);
+        for (int i = 1; i < asteroids.size(); i++) {
+            asteroids.get(i).reset(asteroids.get(i - 1).getTailX() + Settings.ASTEROID_GAP);
+        }
+    }
 }

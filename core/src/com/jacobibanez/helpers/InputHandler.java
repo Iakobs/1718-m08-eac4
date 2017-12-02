@@ -44,12 +44,23 @@ public class InputHandler implements InputProcessor {
 
     @Override
     public boolean touchDown(int screenX, int screenY, int pointer, int button) {
-        this.previousY = screenY;
 
-        stageCoord = stage.screenToStageCoordinates(new Vector2(screenX, screenY));
-        Actor actorHit = stage.hit(stageCoord.x, stageCoord.y, true);
-        if (actorHit != null) {
-            Gdx.app.log("HIT", actorHit.getName());
+        switch (screen.getCurrentState()) {
+            case READY:
+                screen.setCurrentState(GameScreen.GameState.RUNNING);
+                break;
+            case RUNNING:
+                this.previousY = screenY;
+
+                stageCoord = stage.screenToStageCoordinates(new Vector2(screenX, screenY));
+                Actor actorHit = stage.hit(stageCoord.x, stageCoord.y, true);
+                if (actorHit != null) {
+                    Gdx.app.log("HIT", actorHit.getName());
+                }
+                break;
+            case GAME_OVER:
+                screen.reset();
+                break;
         }
 
         return true;
