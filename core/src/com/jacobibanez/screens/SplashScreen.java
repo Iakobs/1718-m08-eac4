@@ -3,6 +3,8 @@ package com.jacobibanez.screens;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.graphics.OrthographicCamera;
+import com.badlogic.gdx.math.Vector2;
+import com.badlogic.gdx.scenes.scene2d.Action;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.actions.Actions;
 import com.badlogic.gdx.scenes.scene2d.actions.RepeatAction;
@@ -15,6 +17,8 @@ import com.jacobibanez.helpers.AssetManager;
 import com.jacobibanez.utils.Settings;
 
 /**
+ * The splash screen.
+ *
  * @author <a href="mailto:jacobibanez@jacobibanez.com">Jacob Ibáñez Sánchez</a>.
  */
 public class SplashScreen implements Screen {
@@ -22,42 +26,56 @@ public class SplashScreen implements Screen {
     private Stage stage;
     private SpaceRace game;
 
-    private Label.LabelStyle textStyle;
-    private Label textLabel;
-
     public SplashScreen(SpaceRace game) {
-        AssetManager.bgMusic.play();
-
         this.game = game;
 
-        OrthographicCamera camera = new OrthographicCamera(Settings.GAME_WIDTH, Settings.GAME_HEIGHT);
-        camera.setToOrtho(true);
+        //start the music
+        AssetManager.bgMusic.play();
 
-        StretchViewport viewport = new StretchViewport(Settings.GAME_WIDTH, Settings.GAME_HEIGHT, camera);
+        stage = getStageWithOrthographicCamera();
 
-        stage = new Stage(viewport);
-
+        //add the background to the stage
         stage.addActor(new Image(AssetManager.background));
 
-        textStyle = new Label.LabelStyle(AssetManager.font, null);
-        textLabel = new Label("SpaceRace", textStyle);
+        //add the game's title
+        Container<Label> gameTitle = getAnimatedText(
+                "SpaceRace",
+                new Vector2(
+                        Settings.GAME_WIDTH / 2,
+                        //TODO Exercici 1 - a) Modifiqueu el títol de l'aplicació per a què es situï en 1/3 de la pantalla.
+                        Settings.GAME_HEIGHT / 3
+                ),
+                Actions.repeat(
+                        RepeatAction.FOREVER,
+                        Actions.sequence(
+                                Actions.scaleTo(1.5f, 1.5f, 1),
+                                Actions.scaleTo(1, 1, 1)
+                        )
+                ));
+        stage.addActor(gameTitle);
 
-        Container<Label> container = new Container<Label>(textLabel);
-        container.setTransform(true);
-        container.center();
-        container.setPosition(Settings.GAME_WIDTH / 2, Settings.GAME_HEIGHT / 2);
-
-        container.addAction(Actions.repeat(
-                RepeatAction.FOREVER,
-                Actions.sequence(
-                        Actions.scaleTo(1.5f, 1.5f, 1),
-                        Actions.scaleTo(1, 1, 1)
+        //TODO Exercici 1 - b) Afegiu un altre títol que es mostri en 5/6 de la pantalla, i la mida de la lletra sigui de 0.2f
+        //TODO Exercici 1 - c) Afegiu una animació sobre aquest segon títol la qual apliqui un efecte de parpelleig sobre el mateix (veure l'efecte al vídeo).
+        Container<Label> text = getAnimatedText(
+                "Tap Screen to Start",
+                new Vector2(
+                        Settings.GAME_WIDTH / 2,
+                        Settings.GAME_HEIGHT / 1.2f
+                ),
+                Actions.repeat(
+                        RepeatAction.FOREVER,
+                        Actions.sequence(
+                                Actions.fadeOut(0.5f),
+                                Actions.fadeIn(0.5f)
+                        )
                 )
-        ));
-        stage.addActor(container);
+        );
+        text.getActor().setFontScale(0.2f);
+        stage.addActor(text);
 
+        //add the spacecraft
         Image spacecraft = new Image(AssetManager.spacecraft);
-        float y = Settings.GAME_HEIGHT / 2 + textLabel.getHeight();
+        float y = Settings.GAME_HEIGHT / 2 + gameTitle.getActor().getHeight();
         spacecraft.addAction(Actions.repeat(
                 RepeatAction.FOREVER,
                 Actions.sequence(
@@ -107,5 +125,31 @@ public class SplashScreen implements Screen {
     @Override
     public void dispose() {
 
+    }
+
+    private Stage getStageWithOrthographicCamera() {
+        //create the orthographic camera
+        OrthographicCamera camera = new OrthographicCamera(Settings.GAME_WIDTH, Settings.GAME_HEIGHT);
+        camera.setToOrtho(true);
+
+        //create the viewport
+        StretchViewport viewport = new StretchViewport(Settings.GAME_WIDTH, Settings.GAME_HEIGHT, camera);
+
+        //return the stage
+        return new Stage(viewport);
+    }
+
+    private Container<Label> getAnimatedText(String text, Vector2 position, Action action) {
+        Label.LabelStyle textStyle = new Label.LabelStyle(AssetManager.font, null);
+        Label textLabel = new Label(text, textStyle);
+
+        Container<Label> container = new Container<Label>(textLabel);
+        container.setTransform(true);
+        container.center();
+        container.setPosition(position.x, position.y);
+
+        container.addAction(action);
+
+        return container;
     }
 }

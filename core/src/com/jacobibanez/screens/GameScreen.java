@@ -26,19 +26,6 @@ public class GameScreen implements Screen {
 
     private static final String SPACECRAFT_NAME = "spacecraft";
 
-    public void reset() {
-        textLayout.setText(AssetManager.font, "Are you\nready?");
-
-        spacecraft.reset();
-        scrollHandler.reset();
-
-        currentState = GameState.READY;
-
-        stage.addActor(spacecraft);
-
-        explosionTime = 0.0f;
-    }
-
     public enum GameState {
         READY, RUNNING, GAME_OVER
     }
@@ -50,7 +37,6 @@ public class GameScreen implements Screen {
     private ShapeRenderer shapeRenderer;
     private Batch batch;
 
-    private boolean gameOver = false;
     private float explosionTime = 0.0f;
 
     private GlyphLayout textLayout;
@@ -75,8 +61,6 @@ public class GameScreen implements Screen {
         this.stage.addActor(spacecraft);
 
         this.spacecraft.setName(SPACECRAFT_NAME);
-
-//        AssetManager.bgMusic.play();
 
         Gdx.input.setInputProcessor(new InputHandler(this));
 
@@ -103,6 +87,19 @@ public class GameScreen implements Screen {
         this.currentState = currentState;
     }
 
+    public void reset() {
+        textLayout.setText(AssetManager.font, "Are you\nready?");
+
+        spacecraft.reset();
+        scrollHandler.reset();
+
+        currentState = GameState.READY;
+
+        stage.addActor(spacecraft);
+
+        explosionTime = 0.0f;
+    }
+
     @Override
     public void show() {
 
@@ -125,6 +122,31 @@ public class GameScreen implements Screen {
         }
 
 //        drawElements();
+    }
+
+    @Override
+    public void resize(int width, int height) {
+
+    }
+
+    @Override
+    public void pause() {
+
+    }
+
+    @Override
+    public void resume() {
+
+    }
+
+    @Override
+    public void hide() {
+
+    }
+
+    @Override
+    public void dispose() {
+
     }
 
     private void updateReady() {
@@ -172,31 +194,6 @@ public class GameScreen implements Screen {
         batch.end();
 
         explosionTime += delta;
-    }
-
-    @Override
-    public void resize(int width, int height) {
-
-    }
-
-    @Override
-    public void pause() {
-
-    }
-
-    @Override
-    public void resume() {
-
-    }
-
-    @Override
-    public void hide() {
-
-    }
-
-    @Override
-    public void dispose() {
-
     }
 
     private void drawElements() {
