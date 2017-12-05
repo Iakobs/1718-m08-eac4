@@ -22,4 +22,7 @@ public class Settings {
     public static final int ASTEROID_SPEED = -150;
     public static final int ASTEROID_GAP = 75;
     public static final int BG_SPEED = -100;
+
+    public static final int BUTTON_H_GAP = Math.round(GAME_WIDTH * 0.025f);
+    public static final int BUTTON_V_GAP = Math.round(GAME_HEIGHT * 0.025f);
 }

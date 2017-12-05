@@ -13,18 +13,16 @@ import com.jacobibanez.screens.GameScreen;
  */
 public class InputHandler implements InputProcessor {
 
-    private Spacecraft spacecraft;
     private GameScreen screen;
-    private int previousY = 0;
-
-    private Vector2 stageCoord;
     private Stage stage;
+    private Spacecraft spacecraft;
+
+    private int previousY = 0;
 
     public InputHandler(GameScreen screen) {
         this.screen = screen;
-        this.spacecraft = screen.getSpacecraft();
-
         this.stage = screen.getStage();
+        this.spacecraft = screen.getSpacecraft();
     }
 
     @Override
@@ -44,7 +42,6 @@ public class InputHandler implements InputProcessor {
 
     @Override
     public boolean touchDown(int screenX, int screenY, int pointer, int button) {
-
         switch (screen.getCurrentState()) {
             case READY:
                 screen.setCurrentState(GameScreen.GameState.RUNNING);
@@ -52,14 +49,21 @@ public class InputHandler implements InputProcessor {
             case RUNNING:
                 this.previousY = screenY;
 
-                stageCoord = stage.screenToStageCoordinates(new Vector2(screenX, screenY));
+                Vector2 stageCoord = stage.screenToStageCoordinates(new Vector2(screenX, screenY));
                 Actor actorHit = stage.hit(stageCoord.x, stageCoord.y, true);
+
                 if (actorHit != null) {
                     Gdx.app.log("HIT", actorHit.getName());
+                    if (actorHit.getName().equals(GameScreen.PAUSE_BUTTON_NAME)) {
+                        screen.pauseScreen();
+                    }
                 }
                 break;
             case GAME_OVER:
                 screen.reset();
+                break;
+            case PAUSE:
+                screen.resumeScreen();
                 break;
         }
 
@@ -68,17 +72,21 @@ public class InputHandler implements InputProcessor {
 
     @Override
     public boolean touchUp(int screenX, int screenY, int pointer, int button) {
-        spacecraft.goStraight();
+        if (screen.getCurrentState().equals(GameScreen.GameState.RUNNING)) {
+            spacecraft.goStraight();
+        }
         return true;
     }
 
     @Override
     public boolean touchDragged(int screenX, int screenY, int pointer) {
-        if (Math.abs(previousY - screenY) > 2) {
-            if (previousY < screenY) {
-                spacecraft.goDown();
-            } else {
-                spacecraft.goUp();
+        if (screen.getCurrentState().equals(GameScreen.GameState.RUNNING)) {
+            if (Math.abs(previousY - screenY) > 2) {
+                if (previousY < screenY) {
+                    spacecraft.goDown();
+                } else {
+                    spacecraft.goUp();
+                }
             }
         }
         previousY = screenY;

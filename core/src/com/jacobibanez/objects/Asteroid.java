@@ -34,8 +34,7 @@ public class Asteroid extends Scrollable {
     public void reset(float newX) {
         super.reset(newX);
 
-        width = getNewRandomSize();
-        height = getNewRandomSize();
+        width = height = getNewRandomSize();
         position.y = new Random().nextInt(Settings.GAME_HEIGHT - (int) getHeight());
     }
 
