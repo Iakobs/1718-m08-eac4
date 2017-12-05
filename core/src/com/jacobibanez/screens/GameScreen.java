@@ -176,6 +176,7 @@ public class GameScreen implements Screen {
         pauseButton.setVisible(false);
         fireButton.setVisible(false);
         AssetManager.bgMusic.setVolume(0.25f);
+        spacecraft.pause();
     }
 
     public void resumeScreen() {
@@ -183,6 +184,7 @@ public class GameScreen implements Screen {
         pauseButton.setVisible(true);
         fireButton.setVisible(true);
         AssetManager.bgMusic.setVolume(1f);
+        spacecraft.resume();
     }
 
     private void updateReady() {
@@ -233,6 +235,8 @@ public class GameScreen implements Screen {
     }
 
     private void updatePause(float delta) {
+        spacecraft.act(delta);
+
         textLayout = new GlyphLayout();
         textLayout.setText(AssetManager.font, "Pause");
 
