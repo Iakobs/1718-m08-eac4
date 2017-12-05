@@ -26,8 +26,6 @@ public class Spacecraft extends Actor {
     private int direction;
     private Rectangle collisionRectangle;
 
-    private float accumulatedDelta;
-
     private boolean paused;
 
     public Spacecraft(float x, float y, int width, int height) {
