@@ -52,9 +52,11 @@ public class InputHandler implements InputProcessor {
                 Actor actorHit = stage.hit(stageCoord.x, stageCoord.y, true);
 
                 if (actorHit != null) {
-                    //TODO Exercici 2 - si fem clicl al botó de pausa, es canvia l'estat
+                    //TODO Exercici 2 - si fem click al botó de pausa, es canvia l'estat
                     if (actorHit.getName().equals(GameScreen.PAUSE_BUTTON_NAME)) {
                         screen.pauseScreen();
+                    } else if (actorHit.getName().equals(GameScreen.FIRE_BUTTON_NAME)) {
+
                     }
                 }
                 break;

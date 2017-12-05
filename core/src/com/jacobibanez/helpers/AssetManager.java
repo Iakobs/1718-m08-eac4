@@ -14,8 +14,9 @@ import com.badlogic.gdx.graphics.g2d.TextureRegion;
 public class AssetManager {
 
     public static Texture sheet;
+    public static Texture fireSheet;
 
-    public static TextureRegion spacecraft, spacecraftDown, spacecraftUp, background, pauseButton;
+    public static TextureRegion spacecraft, spacecraftDown, spacecraftUp, background, pauseButton, fireButton, laser;
 
     public static TextureRegion[] asteroid;
     public static Animation<TextureRegion> asteroidAnimation;
@@ -32,6 +33,9 @@ public class AssetManager {
         sheet = new Texture(Gdx.files.internal("unnamed.png"));
         sheet.setFilter(Texture.TextureFilter.Nearest, Texture.TextureFilter.Nearest);
 
+        fireSheet = new Texture(Gdx.files.internal("fire.png"));
+        sheet.setFilter(Texture.TextureFilter.Nearest, Texture.TextureFilter.Nearest);
+
         spacecraft = new TextureRegion(sheet, 0, 36, 36, 15);
         spacecraft.flip(false, true);
 
@@ -44,6 +48,14 @@ public class AssetManager {
         //TODO Exercici 2 - icona del botó de pausa
         pauseButton = new TextureRegion(sheet, 0, 0, 36, 36);
         pauseButton.flip(false, true);
+
+        //TODO Exercici 3 - icona del botó de disparar
+        fireButton = new TextureRegion(fireSheet, 0, 5, 36, 36);
+        fireButton.flip(false, true);
+
+        //TODO Exercici 3 - imatge del laser
+        laser = new TextureRegion(fireSheet, 0, 0, 20, 5);
+        laser.flip(false, true);
 
         asteroid = new TextureRegion[16];
         for (int i = 0; i < asteroid.length; i++) {

@@ -27,6 +27,7 @@ public class GameScreen implements Screen {
 
     public static final String SPACECRAFT_NAME = "spacecraft";
     public static final String PAUSE_BUTTON_NAME = "pauseButton";
+    public static final String FIRE_BUTTON_NAME = "fireButton";
 
     public enum GameState {
         READY, RUNNING, GAME_OVER, PAUSE
@@ -35,7 +36,7 @@ public class GameScreen implements Screen {
     private Stage stage;
     private Spacecraft spacecraft;
     private ScrollHandler scrollHandler;
-    private Image pauseButton;
+    private Image pauseButton, fireButton;
 
     private ShapeRenderer shapeRenderer;
     private Batch batch;
@@ -60,18 +61,26 @@ public class GameScreen implements Screen {
         );
         this.scrollHandler = new ScrollHandler();
         this.pauseButton = new Image(AssetManager.pauseButton);
+        this.fireButton = new Image(AssetManager.fireButton);
         //TODO Exercici 2 - botó de pausa a la part superior dreta
         this.pauseButton.setPosition(
-                Settings.GAME_WIDTH - pauseButton.getWidth() - Settings.BUTTON_H_GAP,
-                Settings.BUTTON_V_GAP
+                Settings.GAME_WIDTH - pauseButton.getWidth() - Settings.BUTTON_GAP,
+                Settings.BUTTON_GAP
+        );
+        //TODO Exercici 3 - botó de disparar a la part inferior dreta
+        this.fireButton.setPosition(
+                Settings.GAME_WIDTH - fireButton.getWidth() - Settings.BUTTON_GAP,
+                Settings.GAME_HEIGHT - fireButton.getHeight() - Settings.BUTTON_GAP
         );
 
         this.stage.addActor(scrollHandler);
         this.stage.addActor(spacecraft);
         this.stage.addActor(pauseButton);
+        this.stage.addActor(fireButton);
 
         this.spacecraft.setName(SPACECRAFT_NAME);
         this.pauseButton.setName(PAUSE_BUTTON_NAME);
+        this.fireButton.setName(FIRE_BUTTON_NAME);
 
         Gdx.input.setInputProcessor(new InputHandler(this));
 
@@ -165,12 +174,14 @@ public class GameScreen implements Screen {
         //TODO Exercici 2 - s'oculta el botó de pausa i s'abaixa el volum de la música
         setCurrentState(GameScreen.GameState.PAUSE);
         pauseButton.setVisible(false);
+        fireButton.setVisible(false);
         AssetManager.bgMusic.setVolume(0.25f);
     }
 
     public void resumeScreen() {
         setCurrentState(GameScreen.GameState.RUNNING);
         pauseButton.setVisible(true);
+        fireButton.setVisible(true);
         AssetManager.bgMusic.setVolume(1f);
     }
 
