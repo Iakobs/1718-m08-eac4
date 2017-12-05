@@ -60,7 +60,11 @@ public class GameScreen implements Screen {
         );
         this.scrollHandler = new ScrollHandler();
         this.pauseButton = new Image(AssetManager.pauseButton);
-        this.pauseButton.setPosition(Settings.GAME_WIDTH - pauseButton.getWidth() - Settings.BUTTON_H_GAP, Settings.BUTTON_V_GAP);
+        //TODO Exercici 2 - botó de pausa a la part superior dreta
+        this.pauseButton.setPosition(
+                Settings.GAME_WIDTH - pauseButton.getWidth() - Settings.BUTTON_H_GAP,
+                Settings.BUTTON_V_GAP
+        );
 
         this.stage.addActor(scrollHandler);
         this.stage.addActor(spacecraft);
@@ -158,13 +162,16 @@ public class GameScreen implements Screen {
     }
 
     public void pauseScreen() {
+        //TODO Exercici 2 - s'oculta el botó de pausa i s'abaixa el volum de la música
         setCurrentState(GameScreen.GameState.PAUSE);
         pauseButton.setVisible(false);
+        AssetManager.bgMusic.setVolume(0.25f);
     }
 
     public void resumeScreen() {
         setCurrentState(GameScreen.GameState.RUNNING);
         pauseButton.setVisible(true);
+        AssetManager.bgMusic.setVolume(1f);
     }
 
     private void updateReady() {

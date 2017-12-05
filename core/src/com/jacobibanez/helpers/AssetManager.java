@@ -41,6 +41,7 @@ public class AssetManager {
         spacecraftDown = new TextureRegion(sheet, 72, 36, 36, 15);
         spacecraftDown.flip(false, true);
 
+        //TODO Exercici 2 - icona del botó de pausa
         pauseButton = new TextureRegion(sheet, 0, 0, 36, 36);
         pauseButton.flip(false, true);
 
