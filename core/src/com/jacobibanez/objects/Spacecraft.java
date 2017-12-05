@@ -1,11 +1,11 @@
 package com.jacobibanez.objects;
 
+import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.g2d.Batch;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector2;
-import com.badlogic.gdx.scenes.scene2d.Action;
 import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.actions.Actions;
 import com.badlogic.gdx.scenes.scene2d.actions.RepeatAction;
@@ -20,14 +20,6 @@ public class Spacecraft extends Actor {
     public static final int SPACECRAFT_STRAIGHT = 0;
     public static final int SPACECRAFT_UP = 1;
     public static final int SPACECRAFT_DOWN = 2;
-
-    private static final Action pauseAction = Actions.repeat(
-            RepeatAction.FOREVER,
-            Actions.sequence(
-                    Actions.fadeOut(0.5f),
-                    Actions.fadeIn(0.5f)
-            )
-    );
 
     private Vector2 position;
     private int width, height;
@@ -85,6 +77,7 @@ public class Spacecraft extends Actor {
     @Override
     public void act(float delta) {
         super.act(delta);
+        //TODO Exercici 3 - si està pausada, no fa res (tot s'atura)
         if (!paused) {
             float velocityIncrement = Settings.SPACECRAFT_VELOCITY * delta;
             switch (direction) {
@@ -112,11 +105,6 @@ public class Spacecraft extends Actor {
 
         Color color = getColor();
         batch.setColor(color.r, color.g, color.b, color.a);
-//        if (paused) {
-//            batch.setColor(color.r, color.g, color.b, color.a);
-//        } else {
-//            batch.setColor(color.r, color.g, color.b, 1f);
-//        }
 
         batch.draw(getSpacecraftTexture(), position.x, position.y, width, height);
     }
@@ -142,12 +130,19 @@ public class Spacecraft extends Actor {
 
     public void pause() {
         this.paused = true;
-        this.addAction(pauseAction);
+        //TODO Exercici 3 - acció de parpalleig
+        this.addAction(Actions.repeat(
+                RepeatAction.FOREVER,
+                Actions.sequence(
+                        Actions.fadeOut(0.5f),
+                        Actions.fadeIn(0.5f)
+                )
+        ));
     }
 
     public void resume() {
         this.paused = false;
+        this.clearActions();
         this.addAction(Actions.alpha(1f));
-        this.removeAction(pauseAction);
     }
 }

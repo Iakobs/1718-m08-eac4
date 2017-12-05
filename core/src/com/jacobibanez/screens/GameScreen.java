@@ -235,6 +235,7 @@ public class GameScreen implements Screen {
     }
 
     private void updatePause(float delta) {
+        //TODO Exercici 3 - fent act() de la nau, com que tots comparteixen batch, el parpalleig s'escampa
         spacecraft.act(delta);
 
         textLayout = new GlyphLayout();
