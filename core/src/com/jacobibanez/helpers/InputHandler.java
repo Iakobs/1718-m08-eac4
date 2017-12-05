@@ -1,6 +1,5 @@
 package com.jacobibanez.helpers;
 
-import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.InputProcessor;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.scenes.scene2d.Actor;
@@ -53,7 +52,6 @@ public class InputHandler implements InputProcessor {
                 Actor actorHit = stage.hit(stageCoord.x, stageCoord.y, true);
 
                 if (actorHit != null) {
-                    Gdx.app.log("HIT", actorHit.getName());
                     if (actorHit.getName().equals(GameScreen.PAUSE_BUTTON_NAME)) {
                         screen.pauseScreen();
                     }

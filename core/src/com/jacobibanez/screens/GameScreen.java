@@ -7,8 +7,6 @@ import com.badlogic.gdx.graphics.g2d.Batch;
 import com.badlogic.gdx.graphics.g2d.GlyphLayout;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.scenes.scene2d.Stage;
-import com.badlogic.gdx.scenes.scene2d.actions.Actions;
-import com.badlogic.gdx.scenes.scene2d.actions.RepeatAction;
 import com.badlogic.gdx.scenes.scene2d.ui.Image;
 import com.badlogic.gdx.utils.viewport.Viewport;
 import com.jacobibanez.helpers.AssetManager;
@@ -217,7 +215,17 @@ public class GameScreen implements Screen {
     }
 
     private void updatePause(float delta) {
-        stage.act(delta);
+        textLayout = new GlyphLayout();
+        textLayout.setText(AssetManager.font, "Pause");
+
+        batch.begin();
+        AssetManager.font.draw(
+                batch,
+                textLayout,
+                (Settings.GAME_WIDTH / 2) - textLayout.width / 2,
+                (Settings.GAME_HEIGHT / 2) - textLayout.height / 2
+        );
+        batch.end();
     }
 
     private void drawElements() {
