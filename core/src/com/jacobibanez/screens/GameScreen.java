@@ -7,6 +7,7 @@ import com.badlogic.gdx.graphics.g2d.Batch;
 import com.badlogic.gdx.graphics.g2d.GlyphLayout;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.scenes.scene2d.Stage;
+import com.badlogic.gdx.scenes.scene2d.ui.Image;
 import com.badlogic.gdx.utils.viewport.Viewport;
 import com.jacobibanez.helpers.AssetManager;
 import com.jacobibanez.helpers.InputHandler;
@@ -24,15 +25,17 @@ import java.util.List;
  */
 public class GameScreen implements Screen {
 
-    private static final String SPACECRAFT_NAME = "spacecraft";
+    public static final String SPACECRAFT_NAME = "spacecraft";
+    public static final String PAUSE_BUTTON_NAME = "pauseButton";
 
     public enum GameState {
-        READY, RUNNING, GAME_OVER
+        READY, RUNNING, GAME_OVER, PAUSE
     }
 
     private Stage stage;
     private Spacecraft spacecraft;
     private ScrollHandler scrollHandler;
+    private Image pauseButton;
 
     private ShapeRenderer shapeRenderer;
     private Batch batch;
@@ -56,11 +59,19 @@ public class GameScreen implements Screen {
                 Settings.SPACECRAFT_HEIGHT
         );
         this.scrollHandler = new ScrollHandler();
+        this.pauseButton = new Image(AssetManager.pauseButton);
+        //TODO Exercici 2 - botó de pausa a la part superior dreta
+        this.pauseButton.setPosition(
+                Settings.GAME_WIDTH - pauseButton.getWidth() - Settings.BUTTON_H_GAP,
+                Settings.BUTTON_V_GAP
+        );
 
         this.stage.addActor(scrollHandler);
         this.stage.addActor(spacecraft);
+        this.stage.addActor(pauseButton);
 
         this.spacecraft.setName(SPACECRAFT_NAME);
+        this.pauseButton.setName(PAUSE_BUTTON_NAME);
 
         Gdx.input.setInputProcessor(new InputHandler(this));
 
@@ -119,6 +130,9 @@ public class GameScreen implements Screen {
             case GAME_OVER:
                 updateGameOver(delta);
                 break;
+            case PAUSE:
+                updatePause(delta);
+                break;
         }
 
 //        drawElements();
@@ -131,12 +145,10 @@ public class GameScreen implements Screen {
 
     @Override
     public void pause() {
-
     }
 
     @Override
     public void resume() {
-
     }
 
     @Override
@@ -147,6 +159,21 @@ public class GameScreen implements Screen {
     @Override
     public void dispose() {
 
+    }
+
+    public void pauseScreen() {
+        //TODO Exercici 2 - s'oculta el botó de pausa i s'abaixa el volum de la música
+        setCurrentState(GameScreen.GameState.PAUSE);
+        pauseButton.setVisible(false);
+        AssetManager.bgMusic.setVolume(0.25f);
+        spacecraft.pause();
+    }
+
+    public void resumeScreen() {
+        setCurrentState(GameScreen.GameState.RUNNING);
+        pauseButton.setVisible(true);
+        AssetManager.bgMusic.setVolume(1f);
+        spacecraft.resume();
     }
 
     private void updateReady() {
@@ -194,6 +221,23 @@ public class GameScreen implements Screen {
         batch.end();
 
         explosionTime += delta;
+    }
+
+    private void updatePause(float delta) {
+        //TODO Exercici 3 - fent act() de la nau, com que tots comparteixen batch, el parpalleig s'escampa
+        spacecraft.act(delta);
+
+        textLayout = new GlyphLayout();
+        textLayout.setText(AssetManager.font, "Pause");
+
+        batch.begin();
+        AssetManager.font.draw(
+                batch,
+                textLayout,
+                (Settings.GAME_WIDTH / 2) - textLayout.width / 2,
+                (Settings.GAME_HEIGHT / 2) - textLayout.height / 2
+        );
+        batch.end();
     }
 
     private void drawElements() {

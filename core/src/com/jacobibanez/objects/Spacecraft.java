@@ -1,11 +1,14 @@
 package com.jacobibanez.objects;
 
+import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.g2d.Batch;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.scenes.scene2d.Actor;
-import com.badlogic.gdx.scenes.scene2d.Touchable;
+import com.badlogic.gdx.scenes.scene2d.actions.Actions;
+import com.badlogic.gdx.scenes.scene2d.actions.RepeatAction;
 import com.jacobibanez.helpers.AssetManager;
 import com.jacobibanez.utils.Settings;
 
@@ -23,6 +26,8 @@ public class Spacecraft extends Actor {
     private int direction;
     private Rectangle collisionRectangle;
 
+    private boolean paused;
+
     public Spacecraft(float x, float y, int width, int height) {
         this.width = width;
         this.height = height;
@@ -31,9 +36,6 @@ public class Spacecraft extends Actor {
         direction = SPACECRAFT_STRAIGHT;
 
         collisionRectangle = new Rectangle();
-
-        setBounds();
-        setTouchable(Touchable.enabled);
     }
 
     @Override
@@ -74,34 +76,36 @@ public class Spacecraft extends Actor {
 
     @Override
     public void act(float delta) {
-        float velocityIncrement = Settings.SPACECRAFT_VELOCITY * delta;
-        switch (direction) {
-            case SPACECRAFT_UP:
-                if (this.position.y - velocityIncrement >= 0) {
-                    this.position.y -= velocityIncrement;
-                }
-                break;
-            case SPACECRAFT_DOWN:
-                if (this.position.y + height + velocityIncrement <= Settings.GAME_HEIGHT) {
-                    this.position.y += velocityIncrement;
-                }
-                break;
-            case SPACECRAFT_STRAIGHT:
-                break;
+        super.act(delta);
+        //TODO Exercici 3 - si està pausada, no fa res (tot s'atura)
+        if (!paused) {
+            float velocityIncrement = Settings.SPACECRAFT_VELOCITY * delta;
+            switch (direction) {
+                case SPACECRAFT_UP:
+                    if (this.position.y - velocityIncrement >= 0) {
+                        this.position.y -= velocityIncrement;
+                    }
+                    break;
+                case SPACECRAFT_DOWN:
+                    if (this.position.y + height + velocityIncrement <= Settings.GAME_HEIGHT) {
+                        this.position.y += velocityIncrement;
+                    }
+                    break;
+                case SPACECRAFT_STRAIGHT:
+                    break;
+            }
+
+            collisionRectangle.set(position.x, position.y + 3, width, 10);
         }
-
-        collisionRectangle.set(position.x, position.y + 3, width, 10);
-
-        setBounds();
-    }
-
-    private void setBounds() {
-        setBounds(position.x, position.y, width, height);
     }
 
     @Override
     public void draw(Batch batch, float parentAlpha) {
         super.draw(batch, parentAlpha);
+
+        Color color = getColor();
+        batch.setColor(color.r, color.g, color.b, color.a);
+
         batch.draw(getSpacecraftTexture(), position.x, position.y, width, height);
     }
 
@@ -122,5 +126,23 @@ public class Spacecraft extends Actor {
         position.y = Settings.SPACECRAFT_START_Y;
         direction = SPACECRAFT_STRAIGHT;
         collisionRectangle = new Rectangle();
+    }
+
+    public void pause() {
+        this.paused = true;
+        //TODO Exercici 3 - acció de parpalleig
+        this.addAction(Actions.repeat(
+                RepeatAction.FOREVER,
+                Actions.sequence(
+                        Actions.fadeOut(0.5f),
+                        Actions.fadeIn(0.5f)
+                )
+        ));
+    }
+
+    public void resume() {
+        this.paused = false;
+        this.clearActions();
+        this.addAction(Actions.alpha(1f));
     }
 }
