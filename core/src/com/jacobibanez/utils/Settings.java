@@ -19,9 +19,13 @@ public class Settings {
     public static final float MAX_ASTEROID = 1.5f;
     public static final float MIN_ASTEROID = 0.5f;
 
-    public static final int ASTEROID_SPEED = -150;
+    public static final int ASTEROID_SPEED = 150;
     public static final int ASTEROID_GAP = 75;
-    public static final int BG_SPEED = -100;
+    public static final int BG_SPEED = 100;
 
     public static final int BUTTON_GAP = Math.round(GAME_WIDTH * 0.025f);
+
+    public static final int LASER_WIDTH = 10;
+    public static final int LASER_HEIGHT = 10;
+    public static final int LASER_SPEED = 200;
 }

@@ -8,6 +8,8 @@ import com.jacobibanez.objects.Spacecraft;
 import com.jacobibanez.screens.GameScreen;
 
 /**
+ * Class responsible for managing the user's input.
+ *
  * @author <a href="mailto:jacobibanez@jacobibanez.com">Jacob Ibáñez Sánchez</a>.
  */
 public class InputHandler implements InputProcessor {
@@ -17,6 +19,8 @@ public class InputHandler implements InputProcessor {
     private Spacecraft spacecraft;
 
     private int previousY = 0;
+    //variable for tracking the pointer which is moving the spacecraft
+    private int movementPointer;
 
     public InputHandler(GameScreen screen) {
         this.screen = screen;
@@ -43,29 +47,36 @@ public class InputHandler implements InputProcessor {
     public boolean touchDown(int screenX, int screenY, int pointer, int button) {
         switch (screen.getCurrentState()) {
             case READY:
-                screen.setCurrentState(GameScreen.GameState.RUNNING);
+                this.screen.setCurrentState(GameScreen.GameState.RUNNING);
                 break;
             case RUNNING:
-                this.previousY = screenY;
+                Vector2 stageCoord = this.stage.screenToStageCoordinates(new Vector2(screenX, screenY));
+                Actor actorHit = this.stage.hit(stageCoord.x, stageCoord.y, true);
 
-                Vector2 stageCoord = stage.screenToStageCoordinates(new Vector2(screenX, screenY));
-                Actor actorHit = stage.hit(stageCoord.x, stageCoord.y, true);
-
+                //check if an actor has been touched
                 if (actorHit != null) {
                     //TODO Exercici 2 - si fem click al botó de pausa, es canvia l'estat
                     if (actorHit.getName().equals(GameScreen.PAUSE_BUTTON_NAME)) {
-                        screen.pauseScreen();
+                        this.screen.pauseScreen();
                     } else if (actorHit.getName().equals(GameScreen.FIRE_BUTTON_NAME)) {
-
+                        //TODO Exercici 3 - si fem click al botó de disparar, es dispara
+                        this.screen.fire();
+                        if (this.movementPointer == pointer) {
+                            this.movementPointer = -1;
+                        }
                     }
+                } else {
+                    this.movementPointer = pointer;
+                    this.previousY = screenY;
                 }
+
                 break;
             case GAME_OVER:
-                screen.reset();
+                this.screen.reset();
                 break;
             case PAUSE:
                 //TODO Exercici 2 - quan fem click a qualsevol lloc de la pantalla, continua el joc
-                screen.resumeScreen();
+                this.screen.resumeScreen();
                 break;
         }
 
@@ -74,25 +85,34 @@ public class InputHandler implements InputProcessor {
 
     @Override
     public boolean touchUp(int screenX, int screenY, int pointer, int button) {
-        if (screen.getCurrentState().equals(GameScreen.GameState.RUNNING)) {
-            spacecraft.goStraight();
+        //only responds to touch events if you are in RUNNING state
+        if (this.screen.getCurrentState().equals(GameScreen.GameState.RUNNING)) {
+            if (this.movementPointer == pointer) {
+                this.spacecraft.goStraight();
+            }
+            return true;
         }
-        return true;
+        return false;
     }
 
     @Override
     public boolean touchDragged(int screenX, int screenY, int pointer) {
-        if (screen.getCurrentState().equals(GameScreen.GameState.RUNNING)) {
-            if (Math.abs(previousY - screenY) > 2) {
-                if (previousY < screenY) {
-                    spacecraft.goDown();
-                } else {
-                    spacecraft.goUp();
+        //only responds to touch events if you are in RUNNING state
+        if (this.screen.getCurrentState().equals(GameScreen.GameState.RUNNING)) {
+            if (this.movementPointer == pointer) {
+                if (Math.abs(this.previousY - screenY) > 2) {
+                    if (this.previousY < screenY) {
+                        this.spacecraft.goDown();
+                    } else {
+                        this.spacecraft.goUp();
+                    }
+
+                    this.previousY = screenY;
+                    return true;
                 }
             }
         }
-        previousY = screenY;
-        return true;
+        return false;
     }
 
     @Override

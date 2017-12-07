@@ -32,10 +32,10 @@ public class SplashScreen implements Screen {
         //start the music
         AssetManager.bgMusic.play();
 
-        stage = getStageWithOrthographicCamera();
+        this.stage = getStageWithOrthographicCamera();
 
         //add the background to the stage
-        stage.addActor(new Image(AssetManager.background));
+        this.stage.addActor(new Image(AssetManager.background));
 
         //add the game's title
         Container<Label> gameTitle = getAnimatedText(
@@ -52,7 +52,7 @@ public class SplashScreen implements Screen {
                                 Actions.scaleTo(1, 1, 1)
                         )
                 ));
-        stage.addActor(gameTitle);
+        this.stage.addActor(gameTitle);
 
         //TODO Exercici 1 - b) Afegiu un altre títol que es mostri en 5/6 de la pantalla, i la mida de la lletra sigui de 0.2f
         //TODO Exercici 1 - c) Afegiu una animació sobre aquest segon títol la qual apliqui un efecte de parpelleig sobre el mateix (veure l'efecte al vídeo).
@@ -71,7 +71,7 @@ public class SplashScreen implements Screen {
                 )
         );
         text.getActor().setFontScale(0.2f);
-        stage.addActor(text);
+        this.stage.addActor(text);
 
         //add the spacecraft
         Image spacecraft = new Image(AssetManager.spacecraft);
@@ -83,7 +83,7 @@ public class SplashScreen implements Screen {
                         Actions.moveTo(Settings.GAME_WIDTH, y, 5)
                 )
         ));
-        stage.addActor(spacecraft);
+        this.stage.addActor(spacecraft);
     }
 
     @Override
@@ -93,11 +93,12 @@ public class SplashScreen implements Screen {
 
     @Override
     public void render(float delta) {
-        stage.draw();
-        stage.act(delta);
+        this.stage.draw();
+        this.stage.act(delta);
 
+        //when touched, the splash screen is changed for the game screen
         if (Gdx.input.isTouched()) {
-            game.setScreen(new GameScreen(stage.getBatch(), stage.getViewport()));
+            this.game.setScreen(new GameScreen(this.stage.getBatch(), this.stage.getViewport()));
             dispose();
         }
     }
